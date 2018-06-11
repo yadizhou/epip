@@ -1,0 +1,33 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="Epip",
+    version="1.0.0",
+    description="Pipe style programming in Python",
+    url="https://github.com/yadizhou/epip",
+    author="Yadi Zhou",
+    author_email="yadizhou90@gmail.com",
+    license="MIT",
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Environment :: Win32 (MS Windows)",
+        "Environment :: X11 Applications :: GTK",
+        "Environment :: MacOS X :: Cocoa",
+        "Operating System :: Microsoft :: Windows :: Windows 10",
+        "Operating System :: Microsoft :: Windows :: Windows 7",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS :: MacOS X",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: Science/Research",
+        "Topic :: Education",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+    ],
+    keywords="pipeline pipe infix functional",
+    packages=find_packages(),
+    package_data={},
+    install_requires=[],
+    zip_safe=False,
+)
