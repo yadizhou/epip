@@ -13,9 +13,11 @@ begin | [...] | str_ | join("x") | end
 begin | "data.tsv" | open_ | map_(it | split[1]) | int_ | sum_ | end
 ```
 
+See bottom of `pipe.py` for more examples.
+
 # User guide
 
-### Coding style
+## Coding style
 
 #### `[begin |] INPUT | PIPE [| PIPE...] [| end]`
 **Pipe execution**. A typical command look like this. All elements are separated using "`|`".
@@ -36,7 +38,7 @@ data = "filename.tsv" | tsv2dic
 ```
 
 #### `it | PIPE [| PIPE...] [| end]`
-**Functional pipe**. By adding the special pipe `it`, this nested pipe can also work as a function, which is useful when a function is desired.
+**Functional pipe**. By adding the special pipe `it` at the beginning, this shortcut pipe can also work as a function, which is useful when a function is desired.
 
 #### `PIPE OPERATOR PIPE`
 **Compound pipe**. When pipes are connected by operators other than "`|`", a compound pipe is created.
@@ -58,19 +60,19 @@ is_even(4) # True
 **Arguments passing**. The associated functions of some pipes requires certain arguments, which can be passed in this way.
 For example, `join("x")` creats a pipe that joins input strings with `"x"`.
 
-
+## Reference
 ### Pipe class
-    Pipe(FUNC)
+#### `Pipe(FUNC)`
 Turn a function `FUNC` into a pipeable function.
 
-    List(FUNC)
+#### `List(FUNC)`
 Turn a function `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
 to generate a list containing the results. `FUNC` will be evaluated when the `List` type pipe is executed.
 If the input is not a "need to be iterated" object, `List` works as a regular `Pipe`.
 
-    Iter(FUNC)
+#### `Iter(FUNC)`
 Turn a function `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
-to generate a generator that yeilds the results. `FUNC` will not be evaluated when the `Iter` type pipe is executed, unless it's told to do so by the special pipe `end`.
+to generate a generator that yeilds the results. `FUNC` will **not** be evaluated when the `Iter` type pipe is executed, unless it's told to do so by the special pipe `end`.
 If the input is not a "need to be iterated" object, `Iter` works as a regular `Pipe`.
 
 "need to be iterated" classes includes:
@@ -82,11 +84,11 @@ Users can register new "need to be iterated" class by calling `Pipe.register_ite
 
 ### Pipe creating functions
 
-`as_pipe(ANYTHING)`
+#### `as_pipe(ANYTHING)`
 
-`side(FUNC)`
+#### `side(FUNC)`
 
-`switch_args(FUNC)`
+#### `switch_args(FUNC)`
 
 ### Special pipe objects
 
@@ -114,5 +116,3 @@ Users can register new "need to be iterated" class by calling `Pipe.register_ite
 
 ### Basic pipes
 
-# More examples
-See pipe.py
