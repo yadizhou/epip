@@ -24,7 +24,7 @@ class Pipe(object, metaclass=PipeType):
 
     # ---- Core ----
     def __or__(self, other):
-        if isinstance(other, Pipe):
+        if is_pipe(other):
             return self.__class__(lambda o: self.func(o) | other)
         return NotImplemented
 
@@ -48,38 +48,42 @@ class Pipe(object, metaclass=PipeType):
         cls.ITERABLE_USER.append(typ)
 
     # @formatter:off
-    # ---- Comparision op ----
-    def __eq__(self, other): return self.__class__(lambda o: self.func(o) == other)
-    def __ne__(self, other): return self.__class__(lambda o: self.func(o) != other)
-    def __lt__(self, other): return self.__class__(lambda o: self.func(o) < other)
-    def __gt__(self, other): return self.__class__(lambda o: self.func(o) > other)
-    def __le__(self, other): return self.__class__(lambda o: self.func(o) <= other)
-    def __ge__(self, other): return self.__class__(lambda o: self.func(o) >= other)
-    # ---- Arithmetic op ----
-    def __neg__(self): return self.__class__(lambda o: -self.func(o))
-    def __invert__(self): return self.__class__(lambda o: ~self.func(o))
-    def __add__(self, other): return self.__class__(lambda o: self.func(o) + other)
-    def __radd__(self, other): return self.__class__(lambda o: other + self.func(o))
-    def __sub__(self, other): return self.__class__(lambda o: self.func(o) - other)
-    def __rsub__(self, other): return self.__class__(lambda o: other - self.func(o))
-    def __mul__(self, other): return self.__class__(lambda o: self.func(o) * other)
-    def __rmul__(self, other): return self.__class__(lambda o: other * self.func(o))
-    def __truediv__(self, other): return self.__class__(lambda o: self.func(o) / other)
-    def __rtruediv__(self, other): return self.__class__(lambda o: other / self.func(o))
-    def __floordiv__(self, other): return self.__class__(lambda o: self.func(o) // other)
-    def __rfloordiv__(self, other): return self.__class__(lambda o: other // self.func(o))
-    def __mod__(self, other): return self.__class__(lambda o: self.func(o) % other)
-    def __rmod__(self, other): return self.__class__(lambda o: other % self.func(o))
-    def __pow__(self, other): return self.__class__(lambda o: self.func(o) ** other)
-    def __rpow__(self, other): return self.__class__(lambda o: other ** self.func(o))
-    def __lshift__(self, other): return self.__class__(lambda o: self.func(o) << other)
-    def __rlshift__(self, other): return self.__class__(lambda o: other << self.func(o))
-    def __rshift__(self, other): return self.__class__(lambda o: self.func(o) >> other)
-    def __rrshift__(self, other): return self.__class__(lambda o: other >> self.func(o))
-    def __and__(self, other): return self.__class__(lambda o: self.func(o) & other)
-    def __rand__(self, other): return self.__class__(lambda o: other & self.func(o))
     def __getitem__(self, key): return self.__class__(lambda o: self.func(o)[key])
+    # ---- Comparision op ----
+    def __eq__(self, other): return self.__class__((lambda o: self.func(o) == (o | other)) if is_pipe(other) else (lambda o: self.func(o) == other))
+    def __ne__(self, other): return self.__class__((lambda o: self.func(o) != (o | other)) if is_pipe(other) else (lambda o: self.func(o) != other))
+    def __lt__(self, other): return self.__class__((lambda o: self.func(o) < (o | other)) if is_pipe(other) else (lambda o: self.func(o) < other))
+    def __gt__(self, other): return self.__class__((lambda o: self.func(o) > (o | other)) if is_pipe(other) else (lambda o: self.func(o) > other))
+    def __le__(self, other): return self.__class__((lambda o: self.func(o) <= (o | other)) if is_pipe(other) else (lambda o: self.func(o) <= other))
+    def __ge__(self, other): return self.__class__((lambda o: self.func(o) >= (o | other)) if is_pipe(other) else (lambda o: self.func(o) >= other))
+    # ---- Arithmetic op ----
+    def __neg__(self):              return self.__class__(lambda o: -self.func(o))
+    def __invert__(self):           return self.__class__(lambda o: ~self.func(o))
+    def __add__(self, other):       return self.__class__((lambda o: self.func(o) + (o | other)) if is_pipe(other) else (lambda o: self.func(o) + other))
+    def __radd__(self, other):      return self.__class__((lambda o: (o | other) + self.func(o)) if is_pipe(other) else (lambda o: other + self.func(o)))
+    def __sub__(self, other):       return self.__class__((lambda o: self.func(o) - (o | other)) if is_pipe(other) else (lambda o: self.func(o) - other))
+    def __rsub__(self, other):      return self.__class__((lambda o: (o | other) - self.func(o)) if is_pipe(other) else (lambda o: other - self.func(o)))
+    def __mul__(self, other):       return self.__class__((lambda o: self.func(o) * (o | other)) if is_pipe(other) else (lambda o: self.func(o) * other))
+    def __rmul__(self, other):      return self.__class__((lambda o: (o | other) * self.func(o)) if is_pipe(other) else (lambda o: other * self.func(o)))
+    def __truediv__(self, other):   return self.__class__((lambda o: self.func(o) / (o | other)) if is_pipe(other) else (lambda o: self.func(o) / other))
+    def __rtruediv__(self, other):  return self.__class__((lambda o: (o | other) / self.func(o)) if is_pipe(other) else (lambda o: other / self.func(o)))
+    def __floordiv__(self, other):  return self.__class__((lambda o: self.func(o) // (o | other)) if is_pipe(other) else (lambda o: self.func(o) // other))
+    def __rfloordiv__(self, other): return self.__class__((lambda o: (o | other) // self.func(o)) if is_pipe(other) else (lambda o: other // self.func(o)))
+    def __mod__(self, other):       return self.__class__((lambda o: self.func(o) % (o | other)) if is_pipe(other) else (lambda o: self.func(o) % other))
+    def __rmod__(self, other):      return self.__class__((lambda o: (o | other) % self.func(o)) if is_pipe(other) else (lambda o: other % self.func(o)))
+    def __pow__(self, other):       return self.__class__((lambda o: self.func(o) ** (o | other)) if is_pipe(other) else (lambda o: self.func(o) ** other))
+    def __rpow__(self, other):      return self.__class__((lambda o: (o | other) ** self.func(o)) if is_pipe(other) else (lambda o: other ** self.func(o)))
+    def __lshift__(self, other):    return self.__class__((lambda o: self.func(o) << (o | other)) if is_pipe(other) else (lambda o: self.func(o) << other))
+    def __rlshift__(self, other):   return self.__class__((lambda o: (o | other) << self.func(o)) if is_pipe(other) else (lambda o: other << self.func(o)))
+    def __rshift__(self, other):    return self.__class__((lambda o: self.func(o) >> (o | other)) if is_pipe(other) else (lambda o: self.func(o) >> other))
+    def __rrshift__(self, other):   return self.__class__((lambda o: (o | other) >> self.func(o)) if is_pipe(other) else (lambda o: other >> self.func(o)))
+    def __and__(self, other):       return self.__class__((lambda o: self.func(o) & (o | other)) if is_pipe(other) else (lambda o: self.func(o) & other))
+    def __rand__(self, other):      return self.__class__((lambda o: (o | other) & self.func(o)) if is_pipe(other) else (lambda o: other & self.func(o)))
     # @formatter:on
+
+
+def is_pipe(obj):
+    return isinstance(obj, Pipe)
 
 
 class List(Pipe):
@@ -88,12 +92,18 @@ class List(Pipe):
             return [self.func(i) for i in other]
         return self.func(other)
 
+    def __repr__(self):
+        return "<List pipe %s>" % self.name
+
 
 class Iter(Pipe):
     def __ror__(self, other):
         if isinstance(other, (*self.ITERABLE, *self.ITERABLE_LAZY, *self.ITERABLE_USER)):
             return (self.func(i) for i in other)
         return self.func(other)
+
+    def __repr__(self):
+        return "<Iter pipe %s>" % self.name
 
 
 # Special pipes
@@ -104,7 +114,7 @@ class it(Pipe):
 
 class begin(Pipe):
     def __or__(self, other):
-        if isinstance(other, Pipe):
+        if is_pipe(other):
             return other.func()
         return other
 
@@ -496,3 +506,6 @@ if __name__ == '__main__':
     # Misc
     T([0, 0, 2], begin | "1,2,3" | split(",") | (int_ > 2) | mul(2) | end)
     T("1x2", begin | ["1", "2"] | join("x"))
+
+    # Compound pipe
+    T(2.5, begin | [1, 2, 3, 4] | sum_ / len_ | end)
