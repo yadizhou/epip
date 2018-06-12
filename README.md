@@ -1,19 +1,16 @@
 # Epip
 Pipe style programming in Python
 
-
-
 # Example
 ```python
-# open file "data.tsv" and sum the second column
-begin | "data.tsv" | open_ | map_(it | split[1]) | int_ | sum_ | end
-
 # keep even numbers in a list
 begin | [...] | filter_(it % 2 == 0) | end
 
 # join a list using "x"
 begin | [...] | str_ | join("x") | end
 
+# open file "data.tsv" and sum the second column
+begin | "data.tsv" | open_ | map_(it | split[1]) | int_ | sum_ | end
 ```
 
 # User guide
@@ -48,32 +45,48 @@ When data pass in, all pipes execute using the same data first, then the operati
 [1, 2, 3, 4] | sum_ / len_ # will return 2.5
 ```
 
-#### Expression using `PIPE`
+#### `PIPE` in an expression
 **Compound pipe**. When a `PIPE` is enclosed in an expression, for example `sum_+2`, the pipe will execute and then use its output for evaluating the expression.
+If the expression contains `it`, it can also work as a function. For example,
+```python
+is_even = it % 2 == 0
+5 | is_even # False
+is_even(4) # True
+```
 
-####
+#### `PIPE(*args,**kwargs)`
+**Arguments passing**. The associated functions of some pipes requires certain arguments, which can be passed in this way.
+For example, `join("x")` creats a pipe that joins input strings with `"x"`.
+
 
 ### Pipe class
-```python
-Pipe
-```
+    Pipe(FUNC)
+Turn a function `FUNC` into a pipeable function.
 
-```python
-List
-```
+    List(FUNC)
+Turn a function `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
+to generate a list containing the results. `FUNC` will be evaluated when the `List` type pipe is executed.
+If the input is not a "need to be iterated" object, `List` works as a regular `Pipe`.
 
+    Iter(FUNC)
+Turn a function `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
+to generate a generator that yeilds the results. `FUNC` will not be evaluated when the `Iter` type pipe is executed, unless it's told to do so by the special pipe `end`.
+If the input is not a "need to be iterated" object, `Iter` works as a regular `Pipe`.
+
+"need to be iterated" classes includes:
 ```python
-Iter
+list, tuple, range, dict, set, frozenset
+map, zip, filter, enumerate, types.GeneratorType, reversed, type(reversed([])), type(reversed(range(0)))
 ```
+Users can register new "need to be iterated" class by calling `Pipe.register_iterable(USER_CLASS)`
 
 ### Pipe creating functions
 
-`as_pipe`
+`as_pipe(ANYTHING)`
 
-`side`
+`side(FUNC)`
 
-`switch_args`
-
+`switch_args(FUNC)`
 
 ### Special pipe objects
 

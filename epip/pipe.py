@@ -47,6 +47,10 @@ class Pipe(object, metaclass=PipeType):
     def register_iterable(cls, typ):
         cls.ITERABLE_USER.append(typ)
 
+    @classmethod
+    def unregister_iterable(cls, typ):
+        cls.ITERABLE_USER.remove(typ)
+
     # @formatter:off
     def __getitem__(self, key): return self.__class__(lambda o: self.func(o)[key])
     # ---- Comparision op ----
