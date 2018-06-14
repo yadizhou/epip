@@ -34,29 +34,36 @@ In this case you can assign a name for it and use it later. For example,
 tsv2dic = open_ | map_(it | rstrip("\n") | split(maxsplit=1)) | dict_
 data = "filename.tsv" | tsv2dic
 ```
+The special pipes `it` and `who` are used to reference the input directly. Their difference is discussed below.
 
 #### `it | PIPE [| PIPE...] [| end]`
-**Functional pipe**. By adding the special pipe `it` at the beginning, this shortcut pipe can also work as a function, which is useful when a function is desired.
+**Functional pipe**. If `it` is at the beginning, this shortcut pipe can also work as a function, which is useful when a function is desired.
 
-#### `PIPE OPERATOR PIPE`
-**Compound pipe**. When pipes are connected by operators other than "`|`", a compound pipe is created.
-When data pass in, all pipes execute using the same data first, then the operations between the pipes will be executed on their outputs. For example,
-```python
-[1, 2, 3, 4] | sum_ / len_ # will return 2.5
-```
+#### `PIPE(*args,**kwargs)`
+**Arguments passing**. The associated functions of some pipes requires certain arguments, which can be passed in this way.
+For example, `join("x")` creats a pipe that joins input strings with `"x"`.
 
 #### `PIPE` in an expression
-**Compound pipe**. When a `PIPE` is enclosed in an expression, for example `sum_+2`, the pipe will execute and then use its output for evaluating the expression.
+When a `PIPE` is enclosed in an expression, for example `sum_+2`, the pipe will execute and then use its output for evaluating the expression.
 If the expression contains `it`, it can also work as a function. For example,
 ```python
 is_even = it % 2 == 0
 5 | is_even # False
 is_even(4) # True
 ```
-
-#### `PIPE(*args,**kwargs)`
-**Arguments passing**. The associated functions of some pipes requires certain arguments, which can be passed in this way.
-For example, `join("x")` creats a pipe that joins input strings with `"x"`.
+When data pass in, all pipes in the same expression execute using the same input first, then the operations between the pipes will be executed on their outputs. For example,
+```python
+[1, 2, 3, 4] | sum_ / len_ # will return 2.5
+```
+If a pipe is used as an argument for another pipe, the pipe will be executed first when data pass in, then the outside pipe will execute.
+Pipes need to know whether argument is a pipe (which should be executed first to get the output), or anything else. In this case, use the
+special pipes `it` and `who` at the beginning to distinguish. `it` indicates it's a function, while `who` means it's a pipe shortcut.
+```python
+"1234" | split(who[2]) # ['12', '4']
+"1234" | filter_(it!="3") | end # ['1', '2', '4']
+```
+In the two examples above, `it` and `who` are not interchangeable. Since `filter_` requires a function, while `split` requires a value,
+which is generated when the pipe `who[2]` is evaluated. The unrolled version of the first example is `"1234" | split("1234" | who[2])`.
 
 ## Reference
 ### Pipe class
