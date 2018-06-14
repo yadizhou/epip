@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="Epip",
-    version="1.0.0",
+    version="1.0.1",
     description="Pipe style programming in Python",
     url="https://github.com/yadizhou/epip",
     author="Yadi Zhou",

@@ -32,10 +32,22 @@ class Pipe(object, metaclass=PipeType):
         return self.func(other)
 
     def __call__(self, *args, **kwargs):
-        return self.__class__(lambda o: self.func(o, *args, **kwargs))
+        def func(o):
+            a = [(o | arg) if is_pipe(arg) and not isinstance(arg, _it) else arg for arg in args]
+            k = {key: (o | value) if is_pipe(value) and not isinstance(value, _it) else value for key, value in kwargs.items()}
+            return self.func(o, *a, **k)
+
+        return self.__class__(func)
+
+    def __getattr__(self, item):
+        def func(o, *args, **kwargs):
+            m = getattr(o, item)
+            return m(*args, **kwargs) if callable(m) else m
+
+        return self.__class__(func)
 
     def __setattr__(self, attr, value):
-        if hasattr(self, "finalized"):
+        if "finalized" in self.__dict__:
             raise ValueError("This object cannot be modified.")
         else:
             self.__dict__[attr] = value
@@ -111,49 +123,60 @@ class Iter(Pipe):
 
 
 # Special pipes
-class it(Pipe):
+class _it(Pipe):
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
 
 
-class begin(Pipe):
+class _begin(Pipe):
     def __or__(self, other):
         if is_pipe(other):
             return other.func()
         return other
 
 
-class end(Pipe):
+class _end(Pipe):
     def __ror__(self, other):
         if isinstance(other, self.ITERABLE_LAZY):
             return list(other)
         return other
 
 
-class do(Pipe):
+class _do(Pipe):
     def __ror__(self, other):
         return self.func(other)
 
     def __call__(self, *args, **kwargs):
-        return self.__class__(lambda o: o(*args, **kwargs))
+        def func(o):
+            a = [(o | arg) if is_pipe(arg) and not isinstance(arg, _it) else arg for arg in args]
+            k = {key: (o | value) if is_pipe(value) and not isinstance(value, _it) else value for key, value in kwargs.items()}
+            return o(*a, **k)
+
+        return self.__class__(func)
 
 
-class call(Pipe):
+class _call(Pipe):
     def __ror__(self, other):
         return self.func(other)
 
     def __call__(self, name, *args, **kwargs):
-        return self.__class__(lambda o: getattr(o, name)(*args, **kwargs))
+        def func(o):
+            a = [(o | arg) if is_pipe(arg) and not isinstance(arg, _it) else arg for arg in args]
+            k = {key: (o | value) if is_pipe(value) and not isinstance(value, _it) else value for key, value in kwargs.items()}
+            return getattr(o, name)(*a, **k)
+
+        return self.__class__(func)
 
 
 nothing = lambda: None
 passing = lambda other: other
 calling = lambda o: o() if callable(o) else o
-it = it(passing, name="it")
-begin = begin(nothing, name="begin")
-end = end(nothing, name="end")
-do = do(calling, name="do")
-call = call(calling, name="call")
+it = _it(passing, name="it")
+who = Pipe(passing, name="who")
+begin = _begin(nothing, name="begin")
+end = _end(nothing, name="end")
+do = _do(calling, name="do")
+call = _call(calling, name="call")
 
 
 # Pipe creation function
@@ -295,6 +318,7 @@ print_ = side(print)
 
 # =============================== Built-in Types ===============================
 join = Pipe(lambda x, what: what.join(x))
+format_ = Iter(lambda x, what: what.format(*x))
 
 split = Iter(str.split)
 rsplit = Iter(str.rsplit)
@@ -507,9 +531,12 @@ if __name__ == '__main__':
     T([1, 2, 3, 1, 1], begin | [1, 2, 3] | While(len_ < 5, add_([1])) | end)
     T([1, 2, 3, 1, 1], begin | [1, 2, 3] | While(True, add_([1]), len_ == 5) | end)
 
-    # Misc
-    T([0, 0, 2], begin | "1,2,3" | split(",") | (int_ > 2) | mul(2) | end)
-    T("1x2", begin | ["1", "2"] | join("x"))
-
-    # Compound pipe
+    # Compound pipe, ...
+    T("1x2", begin | ["1", "2"] | join("x") | end)
+    T([False, False, True], begin | "1,2,3" | split(",") | (int_ > 2) | end)
     T(2.5, begin | [1, 2, 3, 4] | sum_ / len_ | end)
+    T(["1,", ",3"], begin | "1,2,3" | split(who[2]) | end)
+    T(["5 10", "6 3"], begin | [(10, 5), (3, 6)] | format_("{1} {0}") | end)
+    T(46, begin | 1 | 2 * add(2 * add(2 * add(2 * add(1)))) | end)
+    T([1, 1, 2, 3, 5, 8, 13, 21], begin | [1, 1] | While(True, side(it | call("append", who[-2:] | sum_)), who[-1] > 20) | end)
+    T([1, 1, 2, 3, 5, 8, 13, 21], begin | [1, 1] | While(True, side(it | who.append(who[-2:] | sum_)), who[-1] > 20) | end)

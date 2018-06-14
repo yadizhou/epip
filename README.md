@@ -1,7 +1,7 @@
 # Epip
 Pipe style programming in Python
 
-# Example
+## Example
 ```python
 # keep even numbers in a list
 begin | [...] | filter_(it % 2 == 0) | end
@@ -14,8 +14,6 @@ begin | "data.tsv" | open_ | map_(it | split[1]) | int_ | sum_ | end
 ```
 
 See bottom of `pipe.py` for more examples.
-
-# User guide
 
 ## Coding style
 
@@ -63,15 +61,15 @@ For example, `join("x")` creats a pipe that joins input strings with `"x"`.
 ## Reference
 ### Pipe class
 #### `Pipe(FUNC)`
-Turn a function `FUNC` into a pipeable function.
+Turn a callable `FUNC` into a pipeable function. Base class of `List` and `Iter`.
 
 #### `List(FUNC)`
-Turn a function `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
+Turn a callable `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
 to generate a list containing the results. `FUNC` will be evaluated when the `List` type pipe is executed.
 If the input is not a "need to be iterated" object, `List` works as a regular `Pipe`.
 
 #### `Iter(FUNC)`
-Turn a function `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
+Turn a callable `FUNC` into a pipeable function, which will be applied to each element from the input if the input is an "need to be iterated" object (see below),
 to generate a generator that yeilds the results. `FUNC` will **not** be evaluated when the `Iter` type pipe is executed, unless it's told to do so by the special pipe `end`.
 If the input is not a "need to be iterated" object, `Iter` works as a regular `Pipe`.
 
@@ -93,6 +91,8 @@ Users can register new "need to be iterated" class by calling `Pipe.register_ite
 ### Special pipe objects
 
 #### `it`
+
+#### `who`
 
 #### `begin`
 
