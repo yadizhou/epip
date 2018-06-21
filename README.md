@@ -1,5 +1,9 @@
 # Epip
-Pipe style programming in Python
+Pipe style programming in Python.
+
+To install, `pip install epip`
+
+Then import specific members (see reference), or just `from epip import *`. No built-ins will be shadowed.
 
 ## Example
 ```python
@@ -163,52 +167,97 @@ Pipes have been create for the following Python built-in functions:
 
 | Pipe name     | built-in function  | Pipe type     |
 | ------------- | ------------------ | ------------- |
-| list_ | list | Pipe |
-| tuple_ | tuple | Pipe |
-| range_ | range | Pipe |
-| dict_ | dict | Pipe |
-| set_ | set | Pipe |
-| str_ | str | Iter |
-| int_ | int | Iter |
-| bin_ | bin | Iter |
-| oct_ | oct | Iter |
-| hex_ | hex | Iter |
-| float_ | float | Iter |
-| ord_ | ord | Iter |
-| chr_ | chr | Iter |
-| min_ | min | Pipe |
-| max_ | max | Pipe |
-| sum_ | sum | Pipe |
-| len_ | len | Pipe |
-| abs_ | abs | Iter |
-| pow_ | pow | Iter |
-| round_ | round | Iter |
-| divmod_ | divmod | Iter |
-| bool_ | bool | Pipe |
-| all_ | all | Pipe |
-| any_ | any | Pipe |
-| map_ | map | switch_args |
-| zip_ | zip | Pipe |
-| filter_ | filter | switch_args |
-| sorted_ | sorted | Pipe |
-| reversed_ | reversed | Pipe |
-| enumerate_ | enumerate | Pipe |
-| setattr_ | setattr | Pipe |
-| getattr_ | getattr | Pipe |
-| hasattr_ | hasattr | Pipe |
-| type_ | type | Pipe |
-| super_ | super | Pipe |
-| isinstance_ | isinstance | Pipe |
-| issubclass_ | issubclass | Pipe |
-| callable_ | callable | Pipe |
-| exec_ | exec | Pipe |
-| eval_ | eval | Pipe |
-| open_ | open | Pipe |
-| input_ | input | Pipe |
-| print_ | print | side |
+| `list_` | `list` | `Pipe` |
+| `tuple_` | `tuple` | `Pipe` |
+| `range_` | `range` | `Pipe` |
+| `dict_` | `dict` | `Pipe` |
+| `set_` | `set` | `Pipe` |
+| `str_` | `str` | `Iter` |
+| `int_` | `int` | `Iter` |
+| `bin_` | `bin` | `Iter` |
+| `oct_` | `oct` | `Iter` |
+| `hex_` | `hex` | `Iter` |
+| `float_` | `float` | `Iter` |
+| `ord_` | `ord` | `Iter` |
+| `chr_` | `chr` | `Iter` |
+| `min_` | `min` | `Pipe` |
+| `max_` | `max` | `Pipe` |
+| `sum_` | `sum` | `Pipe` |
+| `len_` | `len` | `Pipe` |
+| `abs_` | `abs` | `Iter` |
+| `pow_` | `pow` | `Iter` |
+| `round_` | `round` | `Iter` |
+| `divmod_` | `divmod` | `Iter` |
+| `bool_` | `bool` | `Pipe` |
+| `all_` | `all` | `Pipe` |
+| `any_` | `any` | `Pipe` |
+| `map_` | `map` | `switch_args` |
+| `zip_` | `zip` | `Pipe` |
+| `filter_` | `filter` | `switch_args` |
+| `sorted_` | `sorted` | `Pipe` |
+| `reversed_` | `reversed` | `Pipe` |
+| `enumerate_` | `enumerate` | `Pipe` |
+| `setattr_` | `setattr` | `Pipe` |
+| `getattr_` | `getattr` | `Pipe` |
+| `hasattr_` | `hasattr` | `Pipe` |
+| `type_` | `type` | `Pipe` |
+| `super_` | `super` | `Pipe` |
+| `isinstance_` | `isinstance` | `Pipe` |
+| `issubclass_` | `issubclass` | `Pipe` |
+| `callable_` | `callable` | `Pipe` |
+| `exec_` | `exec` | `Pipe` |
+| `eval_` | `eval` | `Pipe` |
+| `open_` | `open` | `Pipe` |
+| `input_` | `input` | `Pipe` |
+| `print_` | `print` | `side` |
 
 ### Pre piped str methods
+Pipes have been create for the following Python `str` methods:
 
+| Pipe name     | str function       | Pipe type     |
+| ------------- | ------------------ | ------------- |
+| `join` | `other_str.join` | `Pipe` |
+| `format_` | `other_str.format` | `Iter` |
+| `split` | `str.split` | `Iter` |
+| `rsplit` | `str.rsplit` | `Iter` |
+| `splitlines` | `str.splitlines` | `Iter` |
+| `partition` | `str.partition` | `Iter` |
+| `rpartition` | `str.rpartition` | `Iter` |
+| `ljust` | `str.ljust` | `Iter` |
+| `center` | `str.center` | `Iter` |
+| `rjust` | `str.rjust` | `Iter` |
+| `lower` | `str.lower` | `Iter` |
+| `upper` | `str.upper` | `Iter` |
+| `title` | `str.title` | `Iter` |
+| `capitalize` | `str.capitalize` | `Iter` |
+| `strip` | `str.strip` | `Iter` |
+| `lstrip` | `str.lstrip` | `Iter` |
+| `rstrip` | `str.rstrip` | `Iter` |
+| `startswith` | `str.startswith` | `Iter` |
+| `endswith` | `str.endswith` | `Iter` |
+| `str_is.alnum` | `str.isalnum` | `Iter` |
+| `str_is.alpha` | `str.isalpha` | `Iter` |
+| `str_is.decimal` | `str.isdecimal` | `Iter` |
+| `str_is.digit` | `str.isdigit` | `Iter` |
+| `str_is.lower` | `str.islower` | `Iter` |
+| `str_is.numeric` | `str.isnumeric` | `Iter` |
+| `str_is.space` | `str.isspace` | `Iter` |
+| `str_is.title` | `str.istitle` | `Iter` |
+| `str_is.upper` | `str.isupper` | `Iter` |
 
 ### Basic pipes
-
+| `Iter`        | `Pipe`        |
+| ------------- | ------------- |
+| `add` | `add_` |
+| `sub` | `sub_` |
+| `mul` | `mul_` |
+| `div` | `div_` |
+| `mod` | `mod_` |
+| `is__` | `is_` |
+| `is_not` | `is_not_` |
+| `in__` | `in_` |
+| `not_in` | `not_in_` |
+|  | `has_` |
+|  | `not_has_` |
+|  | `head` |
+|  | `tail` |
