@@ -81,7 +81,9 @@ print(x)  # [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 Note that magic functions cannot be accessed in this way. They can, however, be accessed using `getattr_` or `call` (if the attribute is callable and you want to call it).
 
 ## Reference
-### Pipe class
+### Pipe classes
+These classes are used to create pipes. Simply instantiate them by passing them the actual functions for the pipes.
+
 #### `Pipe(FUNC)`
 Turn a callable `FUNC` into a pipeable function. Base class of `List` and `Iter` and all other pipes. All pipes are non-modifiable.
 
@@ -105,6 +107,7 @@ map, zip, filter, enumerate, types.GeneratorType, reversed, type(reversed([])), 
 Users can register new "need to be iterated" class by calling `Pipe.register_iterable(USER_CLASS)`
 
 ### Pipe creating functions
+These functions can also be used to create pipes. They add an extra layer of wrapper between the actual functions and the pipe classes, to alter the usage of the functions.
 
 #### `as_pipe(ANYTHING)`
 Turns `ANYTHING` into a pipe, which returns `ANYTHING` when executed. Useful for producing constants.
@@ -144,15 +147,68 @@ begin | [1, 2, 3] | call("index", 2) | end  # 1
 ```
 
 ### Flow Control
+These classes are for creating complex pipes that need to have certain flow control abilities. They take pipes as arguments for instantiation.
+In addition, the flow control pipes created by `If` and `While` can also be used as a function, just like `it`.
 
-#### `If`
+#### `If(CONDITION, DO_TRUE, DO_FALSE=None)`
+If `input | CONDITION` is `True`, execute `input | DO_TRUE`, otherwise execute `input | DO_FALSE`. `DO_FALSE` is optional.
+By default the input is returned as the output if `DO_FALSE` is omitted and `input | CONDITION` is `False`.
 
-#### `While`
-
+#### `While(CONDITION, DO_WHILE, C_BREAK=None, DO_BREAK=None)`
+While `input | CONDITION` is `True`, update `input = input | DO_WHILE`, then check if `input | C_BREAK`.
+If the break condition is met, update `input = input | DO_BREAK` then exit the loop.
 
 ### Pre piped built-in functions
+Pipes have been create for the following Python built-in functions:
+
+| Pipe name     | built-in function  | Pipe type     |
+| ------------- | ------------------ | ------------- |
+| list_ | list | Pipe |
+| tuple_ | tuple | Pipe |
+| range_ | range | Pipe |
+| dict_ | dict | Pipe |
+| set_ | set | Pipe |
+| str_ | str | Iter |
+| int_ | int | Iter |
+| bin_ | bin | Iter |
+| oct_ | oct | Iter |
+| hex_ | hex | Iter |
+| float_ | float | Iter |
+| ord_ | ord | Iter |
+| chr_ | chr | Iter |
+| min_ | min | Pipe |
+| max_ | max | Pipe |
+| sum_ | sum | Pipe |
+| len_ | len | Pipe |
+| abs_ | abs | Iter |
+| pow_ | pow | Iter |
+| round_ | round | Iter |
+| divmod_ | divmod | Iter |
+| bool_ | bool | Pipe |
+| all_ | all | Pipe |
+| any_ | any | Pipe |
+| map_ | map | switch_args |
+| zip_ | zip | Pipe |
+| filter_ | filter | switch_args |
+| sorted_ | sorted | Pipe |
+| reversed_ | reversed | Pipe |
+| enumerate_ | enumerate | Pipe |
+| setattr_ | setattr | Pipe |
+| getattr_ | getattr | Pipe |
+| hasattr_ | hasattr | Pipe |
+| type_ | type | Pipe |
+| super_ | super | Pipe |
+| isinstance_ | isinstance | Pipe |
+| issubclass_ | issubclass | Pipe |
+| callable_ | callable | Pipe |
+| exec_ | exec | Pipe |
+| eval_ | eval | Pipe |
+| open_ | open | Pipe |
+| input_ | input | Pipe |
+| print_ | print | side |
 
 ### Pre piped str methods
+
 
 ### Basic pipes
 
