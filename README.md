@@ -131,6 +131,9 @@ Reference to the input itself. When used as the first pipe of a pipe shortcut, i
 #### `who`
 Reference to the input itself.
 
+#### `each`
+Iter through each element of the input. E.g., `"123" | each * 2 | end  # ['11', '22', '33']`
+
 #### `begin`
 Return the output from the pipe on its right (by calling that pipe's function with not args), or return whatever is on its right.
 

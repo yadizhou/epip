@@ -128,6 +128,11 @@ class _it(Pipe):
         return self.func(*args, **kwargs)
 
 
+class _each(Pipe):
+    def __ror__(self, other):
+        return (self.func(i) for i in other)
+
+
 class _begin(Pipe):
     def __or__(self, other):
         if is_pipe(other):
@@ -143,9 +148,6 @@ class _end(Pipe):
 
 
 class _do(Pipe):
-    def __ror__(self, other):
-        return self.func(other)
-
     def __call__(self, *args, **kwargs):
         def func(o):
             a = [(o | arg) if is_pipe(arg) and not isinstance(arg, _it) else arg for arg in args]
@@ -156,9 +158,6 @@ class _do(Pipe):
 
 
 class _call(Pipe):
-    def __ror__(self, other):
-        return self.func(other)
-
     def __call__(self, name, *args, **kwargs):
         def func(o):
             a = [(o | arg) if is_pipe(arg) and not isinstance(arg, _it) else arg for arg in args]
@@ -173,6 +172,7 @@ passing = lambda other: other
 calling = lambda o: o() if callable(o) else o
 it = _it(passing, name="it")
 who = Pipe(passing, name="who")
+each = _each(passing, name="each")
 begin = _begin(nothing, name="begin")
 end = _end(nothing, name="end")
 do = _do(calling, name="do")
@@ -434,7 +434,7 @@ def tail(x, n=5, skip=0):
 
 
 # ==============================================================================
-if __name__ == '__main__':
+if __name__ == "__main__":
     DEBUG = False
 
 
@@ -493,7 +493,8 @@ if __name__ == '__main__':
     T([(1, 3), (2, 4)], begin | [1, 2] | zip_([3, 4]) | end)
     T([2], begin | [1, 2, 3] | filter_(it % 2 == 0) | end)
     T([3, 2, 1], begin | [1, 2, 3] | sorted_(reverse=1) | end)
-    T([3, 2, 1], begin | [1, 2, 3] | reversed_ | end)
+    T([(3, 8), (2, 9), (1, 10)], begin | [(1, 10), (2, 9), (3, 8)] | sorted_(key=it[1]) | end)  # sorted(..., key=it[1])
+    T([3, 2, 1], begin | [1, 2, 3] | reversed_ | end)  # begin | [1, 2, 3] | who[::-1] | end
     T([3, 2, 1], begin | (1, 2, 3) | reversed_ | end)
     T([(0, 1), (1, 2), (2, 3)], begin | [1, 2, 3] | enumerate_ | end)
 
@@ -540,3 +541,6 @@ if __name__ == '__main__':
     T(46, begin | 1 | 2 * add(2 * add(2 * add(2 * add(1)))) | end)
     T([1, 1, 2, 3, 5, 8, 13, 21], begin | [1, 1] | While(True, side(it | call("append", who[-2:] | sum_)), who[-1] > 20) | end)
     T([1, 1, 2, 3, 5, 8, 13, 21], begin | [1, 1] | While(True, side(it | who.append(who[-2:] | sum_)), who[-1] > 20) | end)
+
+    T(["qdel 1", "qdel 2", "qdel 3"], begin | "123" | "qdel " + each | end)
+    T(["qdel 123456", "qdel 234567"], [(1, "123456"), (2, "234567")] | "qdel " + each[1] | end)

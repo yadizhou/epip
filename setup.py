@@ -2,8 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="Epip",
-    version="1.0.2",
+    version="1.0.4",
     description="Pipe style programming in Python",
+    long_description="Please see the GitHub page for documentation:\nhttps://github.com/yadizhou/epip",
     url="https://github.com/yadizhou/epip",
     author="Yadi Zhou",
     author_email="yadizhou90@gmail.com",
@@ -25,7 +26,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
     ],
-    keywords="pipeline pipe infix functional",
+    keywords="pipeline pipe infix functional magic symbolic",
     packages=find_packages(),
     package_data={},
     install_requires=[],
