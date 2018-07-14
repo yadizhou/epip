@@ -41,7 +41,7 @@ class Pipe(object, metaclass=PipeType):
 
     def __getattr__(self, item):
         def func(o, *args, **kwargs):
-            m = getattr(o, item)
+            m = getattr(self.func(o), item)
             return m(*args, **kwargs) if callable(m) else m
 
         return self.__class__(func)

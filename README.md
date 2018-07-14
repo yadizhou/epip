@@ -1,11 +1,17 @@
 # Epip
-Pipe style programming in Python.
+
+[![PyPI version](https://badge.fury.io/py/Epip.svg)](https://badge.fury.io/py/Epip)
+[![Python35](https://img.shields.io/badge/python-3.5-blue.svg)](https://badge.fury.io/py/Epip)
+[![Python36](https://img.shields.io/badge/python-3.6-blue.svg)](https://badge.fury.io/py/Epip)
+
+Pipe/Symbolic style programming in Python. The best way to understand what this package provides is to see some examples below.
 
 To install, `pip install epip`
 
 Then import specific members (see reference), or just `from epip import *`. No built-ins will be shadowed.
 
 ## Example
+Here are some simple examples. You can also find nearly 100 examples at the end of `pipe.py`. There are also examples later in this document.
 ```python
 # keep even numbers in a list
 begin | [...] | filter_(it % 2 == 0) | end
@@ -13,17 +19,21 @@ begin | [...] | filter_(it % 2 == 0) | end
 # join a list using "x"
 begin | [...] | str_ | join("x") | end
 
-# open file "data.tsv" and sum the second column
+# several ways to open text file "data.tsv" -> split each line - >
+#   convert the second column to int -> and sum them
 begin | "data.tsv" | open_ | map_(it | split[1]) | int_ | sum_ | end
-```
+begin | "data.tsv" | open_ | each | split[1] | int_ | sum_ | end
+begin | "data.tsv" | open_ | each.split()[1] | int_ | sum_ | end
 
-See bottom of `pipe.py` for more examples.
+# symbolic execution for calculating the average of 0-9
+begin | range(10) | sum_ / len_ | end
+```
 
 ## Coding style
 
 #### `[begin |] INPUT | PIPE [| PIPE...] [| end]`
 **Pipe execution**. A typical command looks like this. All elements are separated using "`|`".
-The special pipe `begin` (in this cases optional) indicating this line is pipe style execution.
+The special pipe `begin` (in this cases optional and only for better readability) indicating this line is pipe style execution.
 Then an input, for example, a `list`, is followed. A `PIPE` takes the input on its left as the first argument,
 and call its associated function. The returned output is used as input for the next `PIPE`.
 The special pipe `end` marks the end of the current pipe, which is optional is some cases.
@@ -41,12 +51,12 @@ data = "filename.tsv" | tsv2dic
 The special pipes `it` and `who` are used to reference the input directly. Their difference is discussed below.
 
 #### `it | PIPE [| PIPE...] [| end]`
-**Functional pipe**. If `it` is at the beginning, this shortcut pipe can also work as a function, which is useful when a function is desired.
+**Functional/shortcut pipe**. If `it` is at the beginning, this shortcut pipe can also work as a function, which is useful when a function is desired.
 
 #### `PIPE(*args,**kwargs)`
 **Arguments passing**. The associated functions of some pipes requires certain argument(s), which can be passed in this way.
 For example, `join("x")` creates a pipe that joins input strings with `"x"`.
-####
+
 #### `PIPE` in an expression
 When a `PIPE` is enclosed in an expression, for example `sum_ + 2`, the pipe will execute and then use its output for the evaluation of the expression.
 If the expression contains `it`, it can also work as a function. For example,
@@ -127,6 +137,7 @@ The following pipes are unique pipes that serve for special cases.
 
 #### `it`
 Reference to the input itself. When used as the first pipe of a pipe shortcut, it turns the shortcut into a pipe that can also be called like a function.
+`it` can be used as a simpler way to define a lambda function, e.g., `sorted([("a", 2), ("b", 1), ("c", 3)], key=it[1])`
 
 #### `who`
 Reference to the input itself.
@@ -135,7 +146,7 @@ Reference to the input itself.
 Iter through each element of the input. E.g., `"123" | each * 2 | end  # ['11', '22', '33']`
 
 #### `begin`
-Return the output from the pipe on its right (by calling that pipe's function with not args), or return whatever is on its right.
+Return the output from the pipe on its right (by calling that pipe's function with no args), or return whatever is on its right.
 
 #### `end`
 If the input type is in any of the lazy iteratable `map, zip, filter, enumerate, types.GeneratorType, reversed, type(reversed([])), type(reversed(range(0)))`,
